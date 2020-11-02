@@ -21,10 +21,10 @@ WORKDIR /usr/src/fred
 
 # install dependencies
 # using Tsinghua source for bad connection in China
-RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple --upgrade pip
+RUN pip install --upgrade pip
 COPY ./requirements.txt /usr/src/fred/requirements.txt
 COPY ./requirements-dev.txt /usr/src/fred/requirements-dev.txt
-RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements-dev.txt
+RUN pip install -r requirements-dev.txt
 
 # add entrypoint.sh
 COPY ./entrypoint.sh /usr/src/fred/entrypoint.sh
