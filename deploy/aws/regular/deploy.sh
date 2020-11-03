@@ -34,7 +34,7 @@ deploy_cluster() {
   # backend
   service="fred-backend-service"
   template="ecs_backend_task_definition.json"
-  task_template=$(cat "ecs/$template")
+  task_template=$(cat "deploy/aws/regular/ecs/$template")
   task_def=$(printf "$task_template" $AWS_ACCOUNT_ID $AWS_RDS_URI $PRODUCTION_SECRET_KEY)
   echo "$task_def"
   register_definition
@@ -43,7 +43,7 @@ deploy_cluster() {
   # frontend
   service="fred-frontend-service"
   template="ecs_frontend_task_definition.json"
-  task_template=$(cat "ecs/$template")
+  task_template=$(cat "deploy/aws/regular/ecs/$template")
   task_def=$(printf "$task_template" $AWS_ACCOUNT_ID)
   echo "$task_def"
   register_definition

@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    AWS_REGION: "cn-northwest-1"
-    REACT_APP_BACKEND_SERVICE_URL: "fred-alb-1335448716.cn-northwest-1.elb.amazonaws.com.cn"
+    AWS_REGION: "us-east-1"
+    REACT_APP_BACKEND_SERVICE_URL: "http://fred-alb-869519198.us-east-1.elb.amazonaws.com"
 
 phases:
   install:
@@ -38,5 +38,5 @@ phases:
     - echo pushing prod images to ecr...
     - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/fred-backend:prod
     - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/fred-frontend:prod
-    - chmod +x deploy/aws/deploy.sh
-    - bash deploy/aws/deploy.sh
+    - chmod +x deploy/aws/regular/deploy.sh
+    - bash deploy/aws/regular/deploy.sh
