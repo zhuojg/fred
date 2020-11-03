@@ -1,6 +1,8 @@
 # pull official base image
 FROM python:3.8.1-slim
 
+RUN  sed -i 's/http:\/\/deb.debian.org/https:\/\/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+
 # install netcat
 RUN apt-get update && \
     apt-get -y install netcat && \
