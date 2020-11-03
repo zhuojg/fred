@@ -16,14 +16,14 @@ phases:
   build:
     commands:
       - echo building and testing dev images...
-      - docker-compose up -d --build
+      - docker-compose -f './docker-compose.cn.yml' up -d --build
       - docker-compose exec -T backend python -m pytest "app/tests" -p no:warnings --cov="app"
       - docker-compose exec -T frontend npm run test-ci
 
       - echo building images...
       - >
         docker build \
-          -f services/backend/Dockerfile.prod \
+          -f services/backend/Dockerfile.cn.prod \
           -t $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com.cn/fred-backend:prod \
           ./services/backend
       - >
