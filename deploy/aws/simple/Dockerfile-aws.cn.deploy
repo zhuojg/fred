@@ -12,6 +12,10 @@ WORKDIR /usr/src/app
 # add `/usr/src/app/node_modules/.bin` to $PATH
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
+# change Alpine Source
+# for bad connection in China
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+
 # need to add some dependencies
 # --no-cache: download package index on-the-fly, no need to cleanup afterwards
 # --virtual: bundle packages, remove whole bundle at once, when done
@@ -54,6 +58,10 @@ ENV PYTHONUNBUFFERED 1
 ENV FLASK_ENV=production
 ENV APP_SETTINGS=app.config.ProductionConfig
 
+# change Alpine Source
+# for bad connection in China
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
+
 # install python, postgresql, etc.
 RUN apk update && \
     apk add --no-cache --virtual build-deps \
@@ -70,7 +78,7 @@ RUN python3 -m ensurepip && \
 
 # install required packages
 COPY ./services/backend/requirements.txt /usr/src/app/requirements.txt
-RUN pip install -r requirements.txt
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
 
 # add backend app
 COPY ./services/backend /usr/src/app
