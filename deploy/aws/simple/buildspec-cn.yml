@@ -30,3 +30,5 @@ phases:
     commands:
     - echo pushing prod images to ecr...
     - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com.cn/fred:prod
+    - chmod +x deploy/aws/simple/deploy.cn.sh
+    - bash deploy/aws/simple/deploy.cn.sh

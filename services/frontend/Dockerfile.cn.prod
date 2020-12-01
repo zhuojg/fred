@@ -3,7 +3,7 @@
 ###########
 
 # base image
-FROM node:14.9.0-alpine as builder
+FROM node:13.10.1-alpine as builder
 
 # set working directory
 WORKDIR /usr/src/app
@@ -14,15 +14,6 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 # change Alpine Source
 # for bad connection in China
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories
-
-# seems to need to add some dependencies
-# --no-cache: download package index on-the-fly, no need to cleanup afterwards
-# --virtual: bundle packages, remove whole bundle at once, when done
-RUN apk update
-RUN apk --no-cache --virtual build-dependencies add \
-    python \
-    make \
-    g++
 
 # install and cache app dependencies
 COPY package.json /usr/src/app/package.json
