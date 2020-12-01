@@ -124,7 +124,7 @@ Test it out at http://localhost:3007/ and http://localhost:5001/docs
 Build single production image with the `prod` tag:
 
 ```shell
-docker build -f deploy/aws/Dockerfile-aws.deploy -t <ECR-fred-repo-URI>:prod .
+docker build -f deploy/aws/simple/Dockerfile-aws.deploy -t <ECR_fred_repo_URI>:prod .
 ```
 
 Given that RDS database is in VPN and cannot be accessed directly from the Internet. We will use the local Postgres to test.
@@ -162,7 +162,7 @@ docker push <AWS_ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/fred:prod
 Add the `AmazonEC2ContainerRegistryPowerUser` and `AmazonECS_FullAccess` policy to the `codebuild-my-fra-service-role` role using IAM dashboard.  
 <img width="979" alt="Screen Shot 2020-04-15 at 7 47 54 PM" src="https://user-images.githubusercontent.com/595772/79399711-14216480-7f52-11ea-9b2e-59471ead8211.png">
 
-Go to the CodeBuild dashboard and click "Create project":
+Go to the CodeBuild dashboard and click "Create build project":
 
 <img width="712" alt="Screen Shot 2020-04-15 at 7 27 27 PM" src="https://user-images.githubusercontent.com/595772/79398649-2b128780-7f4f-11ea-982a-9b0426208b20.png">
 
@@ -213,35 +213,69 @@ Essentially, one ALB is created with one listener at port 80 and then have two r
 
 ## Configure ECS
 
-get the EC2 instance of the backend to login to initialize the database:
+### Create Cluster
 
-<img width="611" alt="Screen Shot 2020-04-17 at 3 58 18 PM" src="https://user-images.githubusercontent.com/595772/79609348-96319a80-80c4-11ea-8867-39d56b7da12a.png">
-<img width="540" alt="Screen Shot 2020-04-17 at 3 58 27 PM" src="https://user-images.githubusercontent.com/595772/79609355-97fb5e00-80c4-11ea-8431-9ea3457dc653.png">
-<img width="515" alt="Screen Shot 2020-04-17 at 3 58 43 PM" src="https://user-images.githubusercontent.com/595772/79609362-9a5db800-80c4-11ea-98ab-442e60978953.png">
-<img width="636" alt="Screen Shot 2020-04-17 at 3 58 50 PM" src="https://user-images.githubusercontent.com/595772/79609370-9cc01200-80c4-11ea-87bd-6949e0e93555.png">
-<img width="932" alt="Screen Shot 2020-04-17 at 3 59 05 PM" src="https://user-images.githubusercontent.com/595772/79609373-9e89d580-80c4-11ea-85a6-cacfc986c675.png">
+Choose `EC2 Linux + Networking`
 
+![image](https://user-images.githubusercontent.com/24386525/100736071-326aa080-340d-11eb-980e-efdb8ef83036.png)
 
-```
-dami:fred harrywang$ chmod 400 ~/sandbox/keys/fred-aws.pem
-dami:fred harrywang$ ssh -i ~/sandbox/keys/fred-aws.pem ec2-user@52.70.49.60
-```
+Give your cluster a name, choose EC2 type as `t3.nano`, set number of instances to `2`, and remember to choose `Key pair` because we need to ssh to our instance.  
 
+![image](https://user-images.githubusercontent.com/24386525/100736462-c0468b80-340d-11eb-89a7-14bc9854d192.png)
 
-```
-[ec2-user@ip-172-31-84-8 ~]$ docker ps
-CONTAINER ID        IMAGE                                                            COMMAND                  CREATED             STATUS                    PORTS                     NAMES
-017ff3d54c29        991046682610.dkr.ecr.us-east-1.amazonaws.com/fred-backend:prod   "/bin/sh -c 'gunicor…"   4 minutes ago       Up 4 minutes              0.0.0.0:32770->5000/tcp   ecs-fred-backend-td-1-backend-e09bb2fc80e288904f00
-de0d72895173        amazon/amazon-ecs-agent:latest                                   "/agent"                 22 minutes ago      Up 22 minutes (healthy)                             ecs-agent
-```
+In networking part, use VPC and all subnets we created. And choose security group we created.  
 
-```
-$ docker exec -it 017ff3d54c29 bash
-root@017ff3d54c29:/usr/src/app# python manage.py reset_db
-database reset done!
-root@017ff3d54c29:/usr/src/app# python manage.py load_data
-user table loaded
-author and quote tables loaded
-```
+![image](https://user-images.githubusercontent.com/24386525/100736544-dd7b5a00-340d-11eb-9b5d-335479d60e8b.png)
 
-Now go to http://LOAD_BALANCER_DNS_NAME to test out!!
+Click Create and wait a minute.  
+
+### Create Task Definition  
+
+Click `Create new Task Definition` and choose `ECS`  
+
+![image](https://user-images.githubusercontent.com/24386525/100736946-7611da00-340e-11eb-8751-4b9dbdc6b6c3.png)
+
+Give your task definition a name, enter some basic infomation and click `Add container`.  
+
+![image](https://user-images.githubusercontent.com/24386525/100737267-e4ef3300-340e-11eb-8497-412a666489be.png)
+
+There should be a new window. Add infomation follow the instructions. Note that you can get image's url from ECR.
+
+![image](https://user-images.githubusercontent.com/24386525/100737459-2b449200-340f-11eb-9bc0-45e75421c345.png)
+
+Scroll down to find `environment variables`, add the following enrionment variables. `DATABASE_URL` is determined by your RDS.  
+
+![image](https://user-images.githubusercontent.com/595772/79608673-68982180-80c3-11ea-9e1f-52e98d5759be.png)
+
+Click `Add` and now click `Create` to finish.
+
+### Create Service in Cluster  
+
+Come to the page of your cluster, and click `Create` under `Service` tab.
+
+![image](https://user-images.githubusercontent.com/24386525/100737787-98582780-340f-11eb-99b6-572e774d4aa5.png)
+
+Configure as follows
+
+![image](https://user-images.githubusercontent.com/24386525/100737839-ad34bb00-340f-11eb-93f1-9d0288762ed1.png)
+
+No need to change other configurations. Just make sure the Placement Templates is `AZ Balanced Spread`.
+
+Next, configure the Load balancer. Choose `Application Load Balancer` and correct IAM role.
+
+![image](https://user-images.githubusercontent.com/24386525/100737981-e705c180-340f-11eb-92c2-1ff44a87ed01.png)
+
+- Click `Add to load balancer`, and configure as you need. 
+
+> You need to create your own target group, which determines how your traffic is forwarded.  
+> The `Production listener port` is the port of your load balancer, when you visit %URL_OF_YOUR_LOAD_BALANCER:PORT, the request will be forwarded to fredend:80.  
+
+![image](https://user-images.githubusercontent.com/24386525/100738038-fab12800-340f-11eb-9f1b-03f2a0eac7bb.png)
+
+Click Next step, and you can set auto scaling.  
+
+`Next step` again, and you can review your configuration. `Click Create` Service if everything looks fine.
+
+Now your service is created.  
+
+Now go to http://LOAD_BALANCER_DNS_NAME:PORT to test out!!
