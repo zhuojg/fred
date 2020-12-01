@@ -16,6 +16,8 @@ from app.api.utils import (
 
 users_namespace = Namespace("users")
 
+# TODO1: if not add password, there will be Internal Server Error
+# TODO2: we do not need pass `id` when create user
 user = users_namespace.model(
     "User",
     {
@@ -71,6 +73,7 @@ class Users(Resource):
         return user, 200
 
     @users_namespace.expect(user, validate=True)
+    # TODO: typo - should be <user_id>
     @users_namespace.response(200, "<user_is> was updated!")
     @users_namespace.response(404, "User <user_id> does not exist")
     def put(self, user_id):
