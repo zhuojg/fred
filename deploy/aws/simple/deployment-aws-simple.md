@@ -278,4 +278,23 @@ Click Next step, and you can set auto scaling.
 
 Now your service is created.  
 
+## Initialize Database
+
+Get the EC2 instance of the service to login to initialize the database:  
+
+```shell
+ssh -i <PATH_OF_YOUR_KEY> ec2-user@<IP_OF_YOUR_EC2>
+```
+
+Get <CONTAINER_ID> using `docker ps`, and initialize database in the container.  
+
+```shell
+docker exec -it <CONTAINER_ID> sh
+root@017ff3d54c29:/usr/src/app# python manage.py reset_db
+database reset done!
+root@017ff3d54c29:/usr/src/app# python manage.py load_data
+user table loaded
+author and quote tables loaded
+```
+
 Now go to http://LOAD_BALANCER_DNS_NAME:PORT to test out!!
