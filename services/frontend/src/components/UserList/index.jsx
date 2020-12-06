@@ -46,7 +46,7 @@ const UserList = props => {
     // we await to get the result, so set handling to false after `await`
     setAddUserHandling(false)
 
-    if (result && result.status && result.status == 201) {
+    if (result && result.status && result.status === 201) {
       // success
       message.success('Add user successfully.')
       setAddUserModalVisible(false)
@@ -68,7 +68,7 @@ const UserList = props => {
     selectedRowKeys.map(async key => {
       let result = await deleteUser(key)
 
-      if (result && result.status && result.status == 200) {
+      if (result && result.status && result.status === 200) {
         // success
         console.log(result)
         if (result.data && result.data.message) {
