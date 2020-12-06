@@ -1,4 +1,5 @@
 # About
+
 [![harrywang](https://circleci.com/gh/harrywang/fred.svg?style=shield)](https://app.circleci.com/pipelines/github/harrywang/fred)
 
 ![Build Status](https://codebuild.us-east-1.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiM3pqOWNyVEYwTURBcCsrWnkwU0QxZHVHQmhRZ3pOUnZqZnRtZWxmWDhFM0tBNHJMWG9SK1hrdGtQL2I1K0Z4cHFmbFJoL1VTcmM5NHpxV3E4R1pNMHBzPSIsIml2UGFyYW1ldGVyU3BlYyI6InZWRUZXZHliUmhFamVPcTQiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
@@ -22,8 +23,7 @@ Tools and packages used in this project:
 - Python Linting and Formatting: flake8, black, isort
 - JS Linting and Formatting: ESLint and Prettier
 - JSON Web Tokens (JWT) via flask-bcrypt and pyjwt
-- [Bulma](https://bulma.io/): a free, open source, and modern CSS framework
-- [Fresh](https://github.com/cssninjaStudio/fresh): a beautiful Bulma template by CSSNinja
+- [Ant Design](https://ant.design/): A design system for enterprise-level products. Create an efficient and enjoyable work experience.
 - Illustrations from [UnDraw.co](https://undraw.co/)
 - Images from [Unsplash](https://unsplash.com/)
 - [Heroku](https://www.heroku.com/): a platform as a service (PaaS) that enables developers to build, run, and operate applications entirely in the cloud.
