@@ -194,7 +194,6 @@ const UserList = props => {
 
   return isAuthenticated() ? (
     <div className={styles.user_list_wrap}>
-      <div className={styles.user_list_title}>User List</div>
       <div className={styles.user_list_content}>
         <div className={styles.user_list_content_button}>
           <Button

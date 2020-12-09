@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import NavBar from './components/NavBar'
+import { message } from 'antd'
 import Home from './components/Home'
 import Login from './components/Login'
 import Register from './components/Register'
 import Status from './components/Status'
 import UserList from './components/UserList'
-import { Layout, message } from 'antd'
+import HomeLayout from './layouts/HomeLayout'
+import UserLayout from './layouts/UserLayout'
 import styles from './App.module.scss'
 import Image404 from './img/404.svg'
+import { UserOutlined } from '@ant-design/icons'
 import './App.scss'
 
 const App = () => {
@@ -153,66 +155,94 @@ const App = () => {
     </div>
   )
 
-  const { Header, Content, Footer } = Layout
+  const routes = [
+    {
+      path: '/user',
+      name: 'User',
+      component: UserLayout,
+      routes: [
+        {
+          path: '/user',
+          name: 'User',
+          icon: <UserOutlined />,
+          routes: [
+            {
+              path: '/user/status',
+              name: 'User Status',
+              exact: true,
+              component: Status,
+              props: {
+                isAuthenticated,
+                getUserStatus,
+              },
+            },
+            {
+              path: '/user/list',
+              name: 'User List',
+              exact: true,
+              component: UserList,
+              props: {
+                isAuthenticated,
+                getUsers,
+                addUser,
+                deleteUser,
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      exact: true,
+      component: Login,
+      props: {
+        isAuthenticated,
+        handleLoginFormSubmit,
+      },
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      exact: true,
+      component: Register,
+      props: {
+        handleRegisterFormSubmit,
+      },
+    },
+    {
+      path: '/',
+      exact: true,
+      component: Home,
+    },
+    {
+      path: '*',
+      component: PageNotFound,
+    },
+  ]
+
+  const navMenu = [
+    {
+      path: '/page1',
+      name: 'Page1',
+    },
+    {
+      path: '/page2',
+      name: 'Page2',
+    }
+  ]
 
   return (
     <Router>
-      <Layout style={{ minHeight: '100vh' }}>
-        <Header style={{ background: '#ffffff', display: 'flex' }}>
-          <NavBar isAuthenticated={isAuthenticated} logoutUser={logoutUser} />
-        </Header>
-
-        <Content>
-          <Switch>
-            <Route exact path="/">
-              <Home />
-            </Route>
-            <Route exact path="/login">
-              <Login
-                isAuthenticated={isAuthenticated}
-                handleLoginFormSubmit={handleLoginFormSubmit}
-              />
-            </Route>
-            <Route exact path="/register">
-              <Register handleRegisterFormSubmit={handleRegisterFormSubmit} />
-            </Route>
-            <Route exact path="/status">
-              <Status
-                isAuthenticated={isAuthenticated}
-                getUserStatus={getUserStatus}
-              />
-            </Route>
-            <Route exact path="/list">
-              <UserList
-                isAuthenticated={isAuthenticated}
-                getUsers={getUsers}
-                addUser={addUser}
-                deleteUser={deleteUser}
-                updateUser={editUser}
-              />
-            </Route>
-            <Route component={PageNotFound} />
-          </Switch>
-        </Content>
-
-        <Footer
-          style={{
-            textAlign: 'center',
-            background: '#444F60',
-            padding: '3rem 1.5rem 6rem',
-            color: '#ffffff',
-          }}
-        >
-          Made with <i className="fa fa-heart pulse" /> by{' '}
-          <a
-            href="http://harrywang.me"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Harry Wang
-          </a>
-        </Footer>
-      </Layout>
+      <Switch>
+        <HomeLayout
+          isAuthenticated={isAuthenticated}
+          logoutUser={logoutUser}
+          routes={routes}
+          navMenu={navMenu}
+        />
+      </Switch>
     </Router>
   )
 }

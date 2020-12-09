@@ -192,6 +192,19 @@ const Home = () => {
       <Welcome />
       <WhatFredUses />
       <RandomQuotes />
+      <div
+        style={{
+          textAlign: 'center',
+          background: '#444f60',
+          padding: '6rem 1.5rem 6rem',
+          color: '#ffffff',
+        }}
+      >
+        Made with <i className="fa fa-heart pulse" /> by{' '}
+        <a href="http://harrywang.me" target="_blank" rel="noopener noreferrer">
+          Harry Wang
+        </a>
+      </div>
     </div>
   )
 }

@@ -1,10 +1,18 @@
 .navbar_wrap {
   display: flex;
   width: 100%;
-  justify-content: space-between;
+  justify-content: flex-end;
+  align-items: center;
+  padding-right: 24px;
 }
 
 .navbar_logo {
   font-weight: 700;
   cursor: pointer;
+}
+
+.navbar_avatar {
+  &:hover {
+    cursor: pointer;
+  }
 }

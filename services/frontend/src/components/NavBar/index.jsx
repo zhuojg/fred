@@ -1,63 +1,43 @@
 import React from 'react'
-import { Menu } from 'antd'
+import { Menu, Avatar, Button, Popover } from 'antd'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import styles from './index.module.scss'
 
 const NavBar = props => {
-  const { logoutUser, isAuthenticated } = props
+  const { logoutUser, isAuthenticated, navMenu } = props
 
-  const menu = isAuthenticated() ? (
-    <Menu theme="light" mode="horizontal">
-      <Menu.Item key="status">
-        <Link to="/status" data-testid="nav-status">
-          User Status
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="list">
-        <Link to="/list" data-testid="nav-list">
-          User List
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="logout">
-        <div
-          onClick={() => {
-            logoutUser()
-          }}
-          data-testid="nav-logout"
-        >
-          Log Out
+  const avatarPopover = <div>test</div>
+
+  const menu = (
+    <>
+      {isAuthenticated() ? (
+        <div className={styles.navbar_avatar}>
+          <Popover content={avatarPopover}>
+            <Avatar
+              style={{ verticalAlign: 'center' }}
+              onClick={() => {
+                window.location.href = '/user'
+              }}
+            >
+              test
+            </Avatar>
+          </Popover>
         </div>
-      </Menu.Item>
-    </Menu>
-  ) : (
-    <Menu theme="light" mode="horizontal">
-      <Menu.Item key="register">
-        <Link to="/register" data-testid="nav-register">
-          Register
-        </Link>
-      </Menu.Item>
-      <Menu.Item key="login">
-        <Link to="/login" data-testid="nav-login">
-          Log In
-        </Link>
-      </Menu.Item>
-    </Menu>
+      ) : (
+        <div className={styles.navbar_button}>
+          <Button type="primary">
+            <Link to="/register">Register</Link>
+          </Button>
+          <Button style={{ marginLeft: '12px' }}>
+            <Link to="/login">Login</Link>
+          </Button>
+        </div>
+      )}
+    </>
   )
 
-  return (
-    <div className={styles.navbar_wrap}>
-      <div
-        className={styles.navbar_logo}
-        onClick={() => {
-          window.location.href = '/'
-        }}
-      >
-        Fred
-      </div>
-      {menu}
-    </div>
-  )
+  return <div className={styles.navbar_wrap}>{menu}</div>
 }
 
 NavBar.propTypes = {

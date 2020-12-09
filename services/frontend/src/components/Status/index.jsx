@@ -24,7 +24,6 @@ const Status = props => {
 
   return isAuthenticated() ? (
     <div className={styles.status_wrap}>
-      <div className={styles.status_title}>User Status</div>
       <div className={styles.status_content}>
         <strong>Email: </strong>
         <span data-testid="user-email">{state.email}</span>

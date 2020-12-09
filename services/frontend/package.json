@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ant-design/compatible": "^1.0.5",
+    "@ant-design/pro-layout": "^6.5.18",
     "antd": "^4.9.1",
     "autoprefixer": "^10.0.4",
     "axios": "^0.18.1",
