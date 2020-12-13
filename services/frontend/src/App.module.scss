@@ -17,3 +17,9 @@
     justify-content: space-evenly;
   }
 }
+
+:global {
+  .ant-pro-page-container-children-content {
+    margin: 0;
+  }
+}

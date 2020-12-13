@@ -1,19 +1,41 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Menu, Avatar, Button, Popover } from 'antd'
 import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import styles from './index.module.scss'
 
 const NavBar = props => {
-  const { logoutUser, isAuthenticated, navMenu } = props
+  // const { logoutUser, isAuthenticated, navMenu, getUserStatus } = props
+  const { authed, getUserStatus } = props
 
-  const avatarPopover = <div>test</div>
+  const [popoverContent, setPopoverContent] = useState(<div></div>)
+
+  useEffect(() => {
+    const initUserData = async () => {
+      let data = await getUserStatus()
+      if (data && data.email && data.username) {
+        setPopoverContent(
+          <div>
+            <div>E-mail: {data.email}</div>
+            <div>Username: {data.username}</div>
+          </div>,
+        )
+      } else {
+        console.log(data)
+      }
+    }
+    initUserData()
+  }, [])
 
   const menu = (
     <>
-      {isAuthenticated() ? (
+      {authed ? (
         <div className={styles.navbar_avatar}>
-          <Popover content={avatarPopover}>
+          <Popover
+            placement="bottomRight"
+            content={popoverContent}
+            arrowPointAtCenter
+          >
             <Avatar
               style={{ verticalAlign: 'center' }}
               onClick={() => {
@@ -40,9 +62,9 @@ const NavBar = props => {
   return <div className={styles.navbar_wrap}>{menu}</div>
 }
 
-NavBar.propTypes = {
-  logoutUser: PropTypes.func.isRequired,
-  isAuthenticated: PropTypes.func.isRequired,
-}
+// NavBar.propTypes = {
+//   logoutUser: PropTypes.func.isRequired,
+//   isAuthenticated: PropTypes.func.isRequired,
+// }
 
 export default NavBar

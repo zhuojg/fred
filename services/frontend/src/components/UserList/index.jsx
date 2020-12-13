@@ -5,7 +5,7 @@ import { Table, Button, Modal, Form, Input, message } from 'antd'
 import { Redirect } from 'react-router-dom'
 
 const UserList = props => {
-  const { isAuthenticated, getUsers, addUser, deleteUser, editUser } = props
+  const { authed, getUsers, addUser, deleteUser, editUser } = props
   const [users, setUsers] = useState([])
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
   const [addUserModalVisible, setAddUserModalVisible] = useState(false)
@@ -190,9 +190,9 @@ const UserList = props => {
 
   useEffect(() => {
     updateUserList()
-  }, [isAuthenticated, addUserModalVisible])
+  }, [])
 
-  return isAuthenticated() ? (
+  return authed ? (
     <div className={styles.user_list_wrap}>
       <div className={styles.user_list_content}>
         <div className={styles.user_list_content_button}>

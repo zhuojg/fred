@@ -7,15 +7,42 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Status from './components/Status'
 import UserList from './components/UserList'
-import HomeLayout from './layouts/HomeLayout'
-import UserLayout from './layouts/UserLayout'
+import BasicLayout from './layouts/BasicLayout'
+import MainLayout from './layouts/MainLayout'
 import styles from './App.module.scss'
 import Image404 from './img/404.svg'
 import { UserOutlined } from '@ant-design/icons'
 import './App.scss'
 
+export function RouteWithSubRoutes(route) {
+  return (
+    <Route
+      path={route.path}
+      exact={route.exact}
+      render={props => {
+        console.log(props, 'route')
+        // pass the sub-routes down to keep nesting
+        return (
+          <route.component {...route.props} {...props} routes={route.routes} />
+        )
+      }}
+    />
+  )
+}
+
 const App = () => {
   const [accessToken, setAccessToken] = useState(null)
+  const [authed, setAuthed] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [content, setContent] = useState(<></>)
+
+  useEffect(() => {
+    const getInitState = async () => {
+      await isAuthenticated()
+      setLoading(false)
+    }
+    getInitState()
+  }, [])
 
   const getUsers = async () => {
     return axios
@@ -105,10 +132,12 @@ const App = () => {
     return false
   }
 
-  const isAuthenticated = () => {
-    if (accessToken || validRefresh()) {
+  const isAuthenticated = async () => {
+    if (accessToken || (await validRefresh())) {
+      setAuthed(true)
       return true
     }
+    setAuthed(false)
     return false
   }
 
@@ -155,50 +184,64 @@ const App = () => {
     </div>
   )
 
-  const routes = [
+  // nav menu for landing page
+  const homeRoute = [
+    {
+      path: '/page1',
+      exact: true,
+      name: 'Page 1',
+    },
+    {
+      path: '/page2',
+      exact: true,
+      name: 'Page 2',
+    },
+  ]
+
+  const userRoute = [
     {
       path: '/user',
+      exact: true,
       name: 'User',
-      component: UserLayout,
-      routes: [
-        {
-          path: '/user',
-          name: 'User',
-          icon: <UserOutlined />,
-          routes: [
-            {
-              path: '/user/status',
-              name: 'User Status',
-              exact: true,
-              component: Status,
-              props: {
-                isAuthenticated,
-                getUserStatus,
-              },
-            },
-            {
-              path: '/user/list',
-              name: 'User List',
-              exact: true,
-              component: UserList,
-              props: {
-                isAuthenticated,
-                getUsers,
-                addUser,
-                deleteUser,
-              },
-            },
-          ],
-        },
-      ],
+      // component: Status,
+      props: {
+        authed,
+        getUserStatus,
+      },
     },
+    {
+      path: '/user/status',
+      exact: true,
+      name: 'User Status',
+      component: Status,
+      props: {
+        authed,
+        getUserStatus,
+      },
+    },
+    {
+      path: '/user/list',
+      exact: true,
+      name: 'User List',
+      component: UserList,
+      props: {
+        authed,
+        getUsers,
+        addUser,
+        deleteUser,
+      },
+    },
+  ]
+
+  // basic pages
+  const basicRoutes = [
     {
       path: '/login',
       name: 'Login',
       exact: true,
       component: Login,
       props: {
-        isAuthenticated,
+        authed,
         handleLoginFormSubmit,
       },
     },
@@ -222,27 +265,45 @@ const App = () => {
     },
   ]
 
-  const navMenu = [
+  const routes = userRoute.concat(homeRoute).concat(basicRoutes)
+
+  const homeNavMenu = homeRoute
+  const mainNavMenu = [
     {
-      path: '/page1',
-      name: 'Page1',
+      path: '/user',
+      name: 'User',
+      icon: <UserOutlined />,
+      routes: [
+        {
+          path: '/user/status',
+          name: 'Status',
+        },
+        { path: '/user/list', name: 'List' },
+      ],
     },
-    {
-      path: '/page2',
-      name: 'Page2',
-    }
   ]
+
+  useEffect(() => {
+    if (loading) {
+      // TODO: add content
+      setContent(<></>)
+    } else {
+      let Layout = authed ? MainLayout : BasicLayout
+      setContent(
+        <Layout
+          routes={routes}
+          homeNavMenu={homeNavMenu}
+          mainNavMenu={mainNavMenu}
+          authed={authed}
+          getUserStatus={getUserStatus}
+        />,
+      )
+    }
+  }, [loading])
 
   return (
     <Router>
-      <Switch>
-        <HomeLayout
-          isAuthenticated={isAuthenticated}
-          logoutUser={logoutUser}
-          routes={routes}
-          navMenu={navMenu}
-        />
-      </Switch>
+      <Switch>{content}</Switch>
     </Router>
   )
 }

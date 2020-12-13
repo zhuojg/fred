@@ -4,32 +4,32 @@ import { Redirect } from 'react-router-dom'
 import { useEffect } from 'react'
 
 const Status = props => {
-  const { isAuthenticated, getUserStatus } = props
-  const [state, setState] = useState({ email: '', username: '' })
+  const { authed, getUserStatus } = props
+  // const [state, setState] = useState({ email: '', username: '' })
 
-  useEffect(() => {
-    const initStatus = async () => {
-      let data = await getUserStatus()
-      if (data && data.email && data.username) {
-        setState({
-          email: data.email,
-          username: data.username,
-        })
-      } else {
-        console.log(data)
-      }
-    }
-    initStatus()
-  }, [isAuthenticated])
+  // useEffect(() => {
+  //   const initStatus = async () => {
+  //     let data = await getUserStatus()
+  //     if (data && data.email && data.username) {
+  //       setState({
+  //         email: data.email,
+  //         username: data.username,
+  //       })
+  //     } else {
+  //       console.log(data)
+  //     }
+  //   }
+  //   initStatus()
+  // }, [])
 
-  return isAuthenticated() ? (
+  return authed ? (
     <div className={styles.status_wrap}>
       <div className={styles.status_content}>
         <strong>Email: </strong>
-        <span data-testid="user-email">{state.email}</span>
+        {/* <span data-testid="user-email">{state.email}</span> */}
         <br />
         <strong>Username: </strong>
-        <span data-testid="user-username">{state.username}</span>
+        {/* <span data-testid="user-username">{state.username}</span> */}
       </div>
     </div>
   ) : (

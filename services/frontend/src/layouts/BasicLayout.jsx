@@ -1,22 +1,12 @@
 import React from 'react'
-import NavBar from '../components/NavBar'
+// import NavBar from '../components/NavBar'
+import { Button } from 'antd'
 import ProLayout, { Footer, PageContainer } from '@ant-design/pro-layout'
 import { BrowserRouter as Router, Route, Switch, Link } from 'react-router-dom'
+import { RouteWithSubRoutes } from '../App'
 
-function RouteWithSubRoutes(route) {
-  return (
-    <Route
-      path={route.path}
-      render={props => (
-        // pass the sub-routes down to keep nesting
-        <route.component {...route.props} {...props} routes={route.routes} />
-      )}
-    />
-  )
-}
-
-const HomeLayout = props => {
-  const { isAuthenticated, logoutUser, routes, navMenu } = props
+const BasicLayout = props => {
+  const { routes, homeNavMenu } = props
 
   return (
     <>
@@ -27,16 +17,19 @@ const HomeLayout = props => {
         logo={false}
         title="Fred"
         disableContentMargin
-        menuDataRender={() => navMenu}
+        menuDataRender={() => homeNavMenu}
         onMenuHeaderClick={() => {
           window.location.href = '/'
         }}
         rightContentRender={() => (
-          <NavBar
-            isAuthenticated={isAuthenticated}
-            logoutUser={logoutUser}
-            navMenu={navMenu}
-          />
+          <div>
+            <Button type="primary">
+              <Link to="/register">Register</Link>
+            </Button>
+            <Button style={{ marginLeft: '12px' }}>
+              <Link to="/login">Login</Link>
+            </Button>
+          </div>
         )}
       >
         <Switch>
@@ -49,4 +42,4 @@ const HomeLayout = props => {
   )
 }
 
-export default HomeLayout
+export default BasicLayout
